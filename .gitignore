@@ -1,0 +1,78 @@
+# Ignore logs
+log/**
+
+# Ignore node_modules
+node_modules/
+
+# Ignore pycache
+__pycache__/
+
+# Ignore build files
+build/
+
+# Ignore runtime data
+runtime/
+
+# Ignore virtualenv
+venv/
+
+# Ignore migrations
+migrations/
+
+# Ignore static files
+static/
+
+# Ignore temporary files
+*.pyc
+*.log
+*.sqlite
+*.db
+*.db-journal
+*.sqlite-journal
+
+# Ignore IDE files
+__pycache__
+*.egg-info
+
+# Ignore server files
+server.log
+*.pid
+*.sock
+*.sock.lock
+
+# Ignore celery files
+celerybeat-schedule
+celerybeat.pid
+
+# Ignore cron jobs
+cron.log
+cron.lock
+
+# Ignore gunicorn files
+gunicorn.pid
+
+# Ignore uwsgi files
+uwsgi.ini
+uwsgi.log
+uwsgi.pid
+
+# Ignore Flask files
+instance/
+.app/
+webassets.cache
+webassets.log
+
+# Ignore Django files
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+
+# Ignore Celery files
+celeryconfig.py
+celerybeat-schedule
+celerybeat.pid
+
+# Ignore static files
+static/
+staticfiles/
+uploads/
