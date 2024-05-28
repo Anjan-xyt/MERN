@@ -9,4 +9,5 @@
   font-family: 'Poppins';
   background-color: #EDEADE;
   font-size: 14px;
+  user-select: none;
 }
