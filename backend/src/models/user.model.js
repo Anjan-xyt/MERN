@@ -1,62 +1,80 @@
-import mongoose from "mongoose"
+import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const validateEmail = function (email) {
-    const re = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
-    return re.test(email);
-};
-
-const userSchema = new mongoose.Schema({
-    full_name:{
-        type: String,
-        required: true
-
+const userSchema = new Schema(
+  {
+    full_name: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      index: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        toLowerCase: true,
-        validate: [validateEmail, 'Invalid email format'],
+      type: String,
+      required: true,
+      unique: true,
     },
-    phone_number:{
-        type:Number,
-        required: false,
-        unique: true,
-        validate: {
-            validator: function validatePhone() {
-                return this.phoneNr >= 1000000000 && this.phoneNr <= 9999999999;
-            },
-            message: 'Phone number must be exactly 10 digits.',
-        },
+    date_of_birth: {
+      type: Date,
     },
-    username:{
-        type: String,
-        required: true,
-        unique: true,
-        toLowerCase: true
+    profile_pic: {
+      type: String,
+      required: true,
     },
-    age:{
-        type:Number,
-        required: true
+    cover_pic: {
+      type: String,
     },
-    gender:{
-        type:String,
-        required: false
+    refresh_token: {
+      type: String,
     },
-    password:{
-        type: String,
-        required: true
-    },
-    isAdmin:{
-        type: Boolean,
-        default: false
-    },
-    isVerified:{
-        type: Boolean,
-        default: false
-    }
-},{timestamps: true})
+  },
+  { timestamps: true }
+);
 
-const User = new mongoose.model("User", userSchema);
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.isPasswordCorrect = async function (providedText) {
+  return await bcrypt.compare(providedText, this.password);
+};
+
+userSchema.methods.generateAccessToken = async function () {
+  return await jwt.sign(
+    {
+      _id: this.id,
+      username: this.username,
+      email: this.email,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+userSchema.methods.generateRefreshToken = async function () {
+  return await jwt.sign(
+    {
+      _id: this.id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+};
+
+const User = model("User", userSchema);
 
 export default User;

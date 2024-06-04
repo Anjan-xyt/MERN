@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Eye } from "lucide-react";
 
-function Input({ type = "text", placeholder = "", required = false, className = "", ...props }) {
+function Input({ type = "text", placeholder = "", required = false, className = "", name, ...props }) {
+    
   const [showPassword, setShowPassword] = useState(false);
+  const {name} = useRef();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -16,11 +18,13 @@ function Input({ type = "text", placeholder = "", required = false, className = 
           placeholder={placeholder}
           required={required}
           spellCheck={false}
-          className={`${className} h-10 w-80 outline outline-2 outline-black px-5 text-black placeholder-gray-400 bg-blue-100 rounded-sm hover:outline-blue-900 hover:placeholder-slate-600 peer`}
+          name={name}
+          ref={name}
+          className={`${className} h-10 w-80 outline outline-2 outline-gray-800 px-5 text-black placeholder-gray-400 bg-gray-200 rounded-lg hover:outline-blue-900 hover:placeholder-slate-600 peer`}
         />
         <Eye
           size={22}
-          className="absolute top-1/2 right-5 transform -translate-y-1/2 cursor-pointer bg-blue-100 peer-hover:text-blue-900"
+          className="absolute top-1/2 right-5 transform -translate-y-1/2 cursor-pointer bg-gray-200 text-gray-800 peer-hover:text-blue-900"
           onClick={togglePasswordVisibility}
         />
       </div>
@@ -32,7 +36,9 @@ function Input({ type = "text", placeholder = "", required = false, className = 
         placeholder={placeholder}
         required={required}
         spellCheck={false}
-        className={`${className} h-10 w-80 outline outline-2 outline-black px-5 text-black placeholder-gray-400 bg-blue-100 rounded-sm hover:outline-blue-900 hover:placeholder-slate-600`}
+        name={name}
+        ref={ref}
+        className={`${className} h-10 w-80 outline outline-2 outline-gray-800 px-5 text-gray-800 placeholder-gray-400 bg-gray-200 rounded-lg hover:outline-blue-900 hover:placeholder-slate-600`}
         {...props}
       />
     );

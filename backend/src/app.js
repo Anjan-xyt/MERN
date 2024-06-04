@@ -1,20 +1,28 @@
 import express from "express";
-
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import errorHandler from "./utils/expressErrorHandler.js";
 
 const app = express();
 
-// app.get('/api/users/register', (req,res)=>{
-//     res.send('Hiii')
-// })
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 
-//importing routes
-import userRoute from "./routes/user.register.route.js";
+// importing routes
+import userRouter from "./routes/user.router.js";
 
+// deploying routes
+app.use("/api/v1/users", userRouter);
 
-//applying routes
-
-app.use('/api/users',userRoute);
-
-console.log(process.env.PORT)
+// using error handler middleware
+app.use(errorHandler);
 
 export default app;
