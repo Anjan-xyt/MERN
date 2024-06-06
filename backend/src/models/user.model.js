@@ -35,6 +35,14 @@ const userSchema = new Schema(
     cover_pic: {
       type: String,
     },
+    bio: {
+      type: String,
+      default: ""
+    },
+    isVarified: {
+      type: Boolean,
+      default: false
+    },
     refresh_token: {
       type: String,
     },
@@ -76,5 +84,4 @@ userSchema.methods.generateRefreshToken = async function () {
 };
 
 const User = model("User", userSchema);
-
 export default User;

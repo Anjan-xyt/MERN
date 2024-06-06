@@ -18,9 +18,11 @@ app.use(cookieParser());
 
 // importing routes
 import userRouter from "./routes/user.router.js";
+import postRouter from "./routes/post.router.js";
 
 // deploying routes
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/posts", postRouter);
 
 // using error handler middleware
 app.use(errorHandler);

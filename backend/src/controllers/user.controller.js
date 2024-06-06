@@ -16,7 +16,6 @@ const registerController = tryCatch(async (req, res) => {
   if (existingUserWithUsername) throw new ApiError(400, "Choose a different username");
   if (existingUserWithEmail) throw new ApiError(400, "User with this email already exists");
 
-  //uploading image on cloudinary and getting the cloud url where the image is stored
   if (!req.files.profile_pic) throw new ApiError(401, "Please select an image");
 
   let profile_pic = await imgUploadOnCloud(req.files.profile_pic[0].path);
@@ -36,7 +35,6 @@ const registerController = tryCatch(async (req, res) => {
     profile_pic,
     cover_pic,
   });
-  console.log(req.files);
   return res.json(new ApiResponse(201, `${full_name} registered successfully`));
 });
 
@@ -68,12 +66,12 @@ const logInController = tryCatch(async (req, res) => {
     .json(
       new ApiResponse(
         200,
+        `${user.full_name} logged in successfully`,
         {
           user: loggedInUser,
           access_token,
           refresh_token,
         },
-        `${user.full_name} logged in successfully`
       )
     );
 });
@@ -153,8 +151,8 @@ const updateAccountDetails = tryCatch(async (req, res) => {
   let { _id, full_name, date_of_birth } = req.user;
   const { new_full_name, new_date_of_birth } = req.body;
 
-  if (new_full_name.trim() !== "") full_name = new_full_name;
-  if (new_date_of_birth.trim() !== "") date_of_birth = new_date_of_birth;
+  if (new_full_name?.trim() !== "") full_name = new_full_name;
+  if (new_date_of_birth?.trim() !== "") date_of_birth = new_date_of_birth;
 
   const user = await User.findByIdAndUpdate(
     _id,
@@ -220,6 +218,29 @@ const removeCoverPic = tryCatch(async (req, res) => {
   res.send(new ApiResponse(200,"Cover Picture Removed Successfully"))
 })
 
+const updateBio = tryCatch(async (req, res) => {
+  if(!req.user) throw new ApiError(401, "User not found");
+  const user = await User.findByIdAndUpdate(req.user._id,{
+    $set: {
+      bio: req.body.bio || ""
+    }
+  }).select("-password -refresh_token")
+res
+.status(200)
+.json(new ApiResponse(200,"Bio Updated Successfully",user))
+})
+
+const toggleIsVarify = tryCatch(async (req, res) => {
+  if(!req.user) new ApiError(401, "User not found");
+  const user = await User.findById(req.user._id);
+
+  user.isVarified = !user.isVarified;
+  user.save({ validateBeforeSave: false });
+
+  res
+  .send(new ApiResponse(200,"Bio Updated Successfully",user))
+})
+
 const removeUser = tryCatch(async (req, res) => {
   await User.findByIdAndDelete(req.user._id);
   if(req.user.cover_pic) await deleteImageOnCloud(req.user.cover_pic);
@@ -242,4 +263,6 @@ export {
   updateCoverPic,
   removeCoverPic,
   removeUser,
+  updateBio,
+  toggleIsVarify,
 };

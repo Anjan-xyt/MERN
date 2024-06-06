@@ -10,6 +10,8 @@ import {
   updateCoverPic,
   removeCoverPic,
   removeUser,
+  updateBio,
+  toggleIsVarify,
 } from "../controllers/user.controller.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -49,5 +51,9 @@ router.route("/update-cover-pic").post(varifyJWT, upload.fields([
 router.route("/remove-cover-pic").delete(varifyJWT, removeCoverPic);
 
 router.route("/delete-user").delete(varifyJWT, removeUser);
+
+router.route("/update-bio").patch(varifyJWT, updateBio);
+
+router.route("/toggle-is-varify").patch(varifyJWT, toggleIsVarify);
 
 export default router;
