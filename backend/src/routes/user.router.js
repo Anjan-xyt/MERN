@@ -13,6 +13,7 @@ import {
   updateBio,
   toggleIsVarify,
 } from "../controllers/user.controller.js";
+import deleteAllPosts from "../middlewares/deleteAllPosts.middleware.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import varifyJWT from "../middlewares/auth.middleware.js";
@@ -54,6 +55,6 @@ router.route("/update-bio").patch(varifyJWT, updateBio);
 
 router.route("/toggle-is-varify").patch(varifyJWT, toggleIsVarify);
 
-router.route("/delete-user").delete(varifyJWT, removeUser);// we have to add the feature to delete all the posts created by the user at the time of the user deletion
+router.route("/delete-user").delete(varifyJWT, deleteAllPosts, removeUser);
 
 export default router;

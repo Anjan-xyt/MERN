@@ -85,7 +85,8 @@ const deletePost = tryCatch(async (req, res) => {
   if (!post) throw new ApiError(500, "Post fetch failed");
 
   const isUserAuthorized = await post.isUserVarified(req.user._id);
-  if (!isUserAuthorized)  throw new ApiError(400, "You are not authorized to delete this post since you didn't create it");
+  if (!isUserAuthorized)
+    throw new ApiError(400, "You are not authorized to delete this post since you didn't create it");
 
   const deletedPost = await Post.findByIdAndDelete(post._id);
   if (!deletedPost) throw new ApiError(500, "Post deletion failed");
@@ -94,4 +95,37 @@ const deletePost = tryCatch(async (req, res) => {
   res.status(200).json(new ApiResponse(201, "Post deleted successfully", deletedPost));
 });
 
-export { createPost, getAllPosts, currrentPostDetails, deletePost };
+const deleteAllPosts = tryCatch(async (req, res, next) => {
+  if (!req.user) throw new ApiError(401, "User not authorized");
+  if (!req.user._id) throw new ApiError(401, "User not authorized");
+
+  const allPostURLs = await Post.aggregate([
+    //returns an array having objects containing only key "post_url"
+    {
+      $match: {
+        created_by: new mongoose.Types.ObjectId(req.user._id),
+      },
+    },
+    {
+      $project: {
+        post_url: 1,
+        _id: 0,
+      },
+    },
+  ]);
+
+  allPostURLs.forEach(async (obj) => {
+    try {
+      await deleteImageOnCloud(obj.post_url);
+    } catch (error) {
+      throw new ApiError(500, "Failed to delete images from cloud");
+    }
+  });
+
+  const allDeletedPosts = await Post.deleteMany({ created_by: req.user._id });
+  if (!allDeletedPosts) throw new ApiError(500, "Post deletion failed");
+
+  res.status(200).json(new ApiResponse(200, "All Posts Deleted Successfully", allDeletedPosts));
+});
+
+export { createPost, getAllPosts, currrentPostDetails, deletePost, deleteAllPosts };

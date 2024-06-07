@@ -1,6 +1,6 @@
 import varifyJWT from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { createPost, getAllPosts, currrentPostDetails, deletePost } from "../controllers/post.controller.js";
+import { createPost, getAllPosts, currrentPostDetails, deletePost, deleteAllPosts } from "../controllers/post.controller.js";
 import { Router } from "express";
 
 const postRouter = Router();
@@ -16,5 +16,7 @@ postRouter.route("/get-all-posts").get(getAllPosts);
 postRouter.route("/:post_id/current-post-details").post(currrentPostDetails);
 
 postRouter.route("/:post_id/delete-post").delete(deletePost);
+
+postRouter.route("/delete-all-posts").delete(deleteAllPosts);
 
 export default postRouter;
