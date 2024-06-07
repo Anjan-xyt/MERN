@@ -16,9 +16,21 @@ const commentSchema = new Schema(
       ref: "Comment",
       required: true,
     },
+    isEdited: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
+
+commentSchema.methods.isCommentVarified = function(comment_by, post_id) {
+  if(this.comment_by.equals(comment_by) && this.post_id.equals(post_id)){
+    return true;
+  }else{
+    return false
+  }
+}
 
 const Comment = model("Comment", commentSchema);
 export default Comment;

@@ -76,6 +76,53 @@ const currrentPostDetails = tryCatch(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Post details fetched successfully", post));
 });
 
+const updatePostDetails = tryCatch(async (req, res) => {
+  if (!req.user) throw new ApiError(401, "User not authorized");
+  if (!req.user._id) throw new ApiError(401, "User not authorized");
+  if (!req.params?.post_id) throw new ApiError(401, "Please provide post id");
+  if (!req.body) throw new ApiError(401, "Please provide post details");
+
+  const { caption, description } = req.body;
+  if (!caption?.trim()) throw new ApiError(400, "Provide a caption");
+
+  const post = await Post.findById(req.params.post_id);
+  if (!post) throw new ApiError(500, "Post fetch failed");
+
+  const isUserAuthorized = await post.isUserVarified(req.user._id);
+  if (!isUserAuthorized) {
+    throw new ApiError(400, "You are not authorized to update this post since you didn't create it");
+  }
+
+  post.caption = caption?.trim();
+  post.description = description?.trim();
+  await post.save({ validateBeforeSave: false });
+
+  res.status(200).json(new ApiResponse(200, "Post details updated successfully"));
+});
+
+const updatePostImage = tryCatch(async (req, res) => {
+  if (!req.user?._id) throw new ApiError(401, "User not authorized");
+
+  if (!req.params?.post_id) throw new ApiError(400, "Please provide post id");
+  if (!req.files?.post_img[0]) throw new ApiError(400, "Please provide post image");
+
+  const post = await Post.findById(req.params.post_id);
+  if (!post) throw new ApiError(500, "Post fetch failed");
+
+  const isUserAuthorized = await post.isUserVarified(req.user._id);
+  if (!isUserAuthorized) {
+    throw new ApiError(400, "You are not authorized to update this post since you didn't create it");
+  }
+  await deleteImageOnCloud(post.post_url);
+  const post_url = await imgUploadOnCloud(req.files.post_img[0].path);
+  if (!post_url) throw new ApiError(500, "Failed to upload image");
+
+  post.post_url = post_url;
+  await post.save({ validateBeforeSave: false });
+
+  res.status(200).json(new ApiResponse(200, "Post image updated successfully", { post_url }));
+});
+
 const deletePost = tryCatch(async (req, res) => {
   if (!req.user) throw new ApiError(401, "User not authorized");
   if (!req.user._id) throw new ApiError(401, "User not authorized");
@@ -95,7 +142,7 @@ const deletePost = tryCatch(async (req, res) => {
   res.status(200).json(new ApiResponse(201, "Post deleted successfully", deletedPost));
 });
 
-const deleteAllPosts = tryCatch(async (req, res, next) => {
+const deleteAllPosts = tryCatch(async (req, res) => {
   if (!req.user) throw new ApiError(401, "User not authorized");
   if (!req.user._id) throw new ApiError(401, "User not authorized");
 
@@ -128,4 +175,4 @@ const deleteAllPosts = tryCatch(async (req, res, next) => {
   res.status(200).json(new ApiResponse(200, "All Posts Deleted Successfully", allDeletedPosts));
 });
 
-export { createPost, getAllPosts, currrentPostDetails, deletePost, deleteAllPosts };
+export { createPost, getAllPosts, currrentPostDetails, deletePost, deleteAllPosts, updatePostDetails, updatePostImage };
