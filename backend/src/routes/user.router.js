@@ -34,11 +34,11 @@ router.route("/logout").post(varifyJWT, logOutController);
 
 router.route("/refresh-access-token").post(refreshAccessToken);
 
-router.route("/change-password").post(varifyJWT, changePassword);
+router.route("/change-password").patch(varifyJWT, changePassword);
 
-router.route("/current-user").post(varifyJWT, currentUser);
+router.route("/current-user-details").get(varifyJWT, currentUser);
 
-router.route("/update-user").post(varifyJWT, updateAccountDetails);
+router.route("/update-user-details").patch(varifyJWT, updateAccountDetails);
 
 router.route("/update-profile-pic").post(varifyJWT, upload.fields([
   {name:"new_profile_pic"}
@@ -50,10 +50,10 @@ router.route("/update-cover-pic").post(varifyJWT, upload.fields([
 
 router.route("/remove-cover-pic").delete(varifyJWT, removeCoverPic);
 
-router.route("/delete-user").delete(varifyJWT, removeUser);
-
 router.route("/update-bio").patch(varifyJWT, updateBio);
 
 router.route("/toggle-is-varify").patch(varifyJWT, toggleIsVarify);
+
+router.route("/delete-user").delete(varifyJWT, removeUser);// we have to add the feature to delete all the posts created by the user at the time of the user deletion
 
 export default router;

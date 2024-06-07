@@ -22,5 +22,10 @@ const postSchema = new Schema(
   { timestamps: true }
 );
 
+postSchema.methods.isUserVarified = async function (user_id) {
+  if (user_id.equals(this.created_by)) return true;
+  return false;
+};
+
 const Post = model("Post", postSchema);
 export default Post;

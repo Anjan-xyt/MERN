@@ -4,6 +4,7 @@ import ApiResponse from "../utils/apiResponse.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import imgUploadOnCloud from "../utils/imgUploadOnCloud.js";
+import deleteImageOnCloud from "../utils/imgDeleteOnCloud.js";
 import mongoose from "mongoose";
 
 const createPost = tryCatch(async (req, res) => {
@@ -26,7 +27,7 @@ const createPost = tryCatch(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Post created successfully", post));
 });
 
-const getPostDetails = tryCatch(async (req, res) => {
+const getAllPosts = tryCatch(async (req, res) => {
   if (!req.user) throw new ApiError(401, "User not found");
   if (!req.user?._id) throw new ApiError(401, "User not found");
 
@@ -64,4 +65,33 @@ const getPostDetails = tryCatch(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Post details fetched successfully", details));
 });
 
-export { createPost, getPostDetails };
+const currrentPostDetails = tryCatch(async (req, res) => {
+  if (!req.user) throw new ApiError(401, "User not authorized");
+  if (!req.params?.post_id) throw new ApiError(401, "Please provide post id");
+
+  const post = await Post.findById(req.params.post_id);
+
+  if (!post) throw new ApiError(500, "Post fetch failed");
+
+  res.status(200).json(new ApiResponse(200, "Post details fetched successfully", post));
+});
+
+const deletePost = tryCatch(async (req, res) => {
+  if (!req.user) throw new ApiError(401, "User not authorized");
+  if (!req.user._id) throw new ApiError(401, "User not authorized");
+  if (!req.params?.post_id) throw new ApiError(401, "Please provide post id");
+
+  const post = await Post.findById(req.params.post_id);
+  if (!post) throw new ApiError(500, "Post fetch failed");
+
+  const isUserAuthorized = await post.isUserVarified(req.user._id);
+  if (!isUserAuthorized)  throw new ApiError(400, "You are not authorized to delete this post since you didn't create it");
+
+  const deletedPost = await Post.findByIdAndDelete(post._id);
+  if (!deletedPost) throw new ApiError(500, "Post deletion failed");
+  await deleteImageOnCloud(post.post_url);
+
+  res.status(200).json(new ApiResponse(201, "Post deleted successfully", deletedPost));
+});
+
+export { createPost, getAllPosts, currrentPostDetails, deletePost };
