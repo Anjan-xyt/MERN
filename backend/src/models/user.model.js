@@ -43,6 +43,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false
     },
+    isPrivateAccount: {
+      type: Boolean,
+      default:false
+    },
     refresh_token: {
       type: String,
     },

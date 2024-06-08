@@ -1,5 +1,4 @@
 import Comment from "../models/comment.model.js";
-import Post from "../models/post.model.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import tryCatch from "../utils/trycatch.js";

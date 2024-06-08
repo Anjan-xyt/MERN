@@ -64,15 +64,11 @@ const logInController = tryCatch(async (req, res) => {
     .cookie("access_token", access_token, { httpOnly: true, secure: true })
     .cookie("refresh_token", refresh_token, { httpOnly: true, secure: true })
     .json(
-      new ApiResponse(
-        200,
-        `${user.full_name} logged in successfully`,
-        {
-          user: loggedInUser,
-          access_token,
-          refresh_token,
-        },
-      )
+      new ApiResponse(200, `${user.full_name} logged in successfully`, {
+        user: loggedInUser,
+        access_token,
+        refresh_token,
+      })
     );
 });
 
@@ -178,14 +174,11 @@ const updateProfilePic = tryCatch(async (req, res) => {
   const profile_pic = await imgUploadOnCloud(req.files.new_profile_pic[0].path);
   if (!profile_pic) throw new ApiError(500, "Image upload failed");
 
-
   const user = await User.findById(req.user._id);
   user.profile_pic = profile_pic;
   await user.save({ validateBeforeSave: false });
 
-  res
-  .status(200)
-  .json(new ApiResponse(200,"Profile Picture Updated Successfully"))
+  res.status(200).json(new ApiResponse(200, "Profile Picture Updated Successfully"));
 });
 
 const updateCoverPic = tryCatch(async (req, res) => {
@@ -200,56 +193,64 @@ const updateCoverPic = tryCatch(async (req, res) => {
   user.cover_pic = cover_pic;
   await user.save({ validateBeforeSave: false });
 
-  res
-  .status(200)
-  .json(new ApiResponse(200,"Cover Picture Updated Successfully"))
+  res.status(200).json(new ApiResponse(200, "Cover Picture Updated Successfully"));
 });
 
 const removeCoverPic = tryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
-  if(!user.cover_pic) throw new ApiError(401, "No cover picture found");
+  if (!user.cover_pic) throw new ApiError(401, "No cover picture found");
   await User.findByIdAndUpdate(req.user._id, {
     $unset: {
-      cover_pic: 1
+      cover_pic: 1,
     },
-  })
-  if(!req.user.cover_pic) throw new ApiError(401, "No cover picture found");
+  });
+  if (!req.user.cover_pic) throw new ApiError(401, "No cover picture found");
   await deleteImageOnCloud(req.user.cover_pic);
-  res.send(new ApiResponse(200,"Cover Picture Removed Successfully"))
-})
+  res.send(new ApiResponse(200, "Cover Picture Removed Successfully"));
+});
 
 const updateBio = tryCatch(async (req, res) => {
-  if(!req.user) throw new ApiError(401, "User not found");
-  const user = await User.findByIdAndUpdate(req.user._id,{
+  if (!req.user) throw new ApiError(401, "User not found");
+  const user = await User.findByIdAndUpdate(req.user._id, {
     $set: {
-      bio: req.body.bio || ""
-    }
-  }).select("-password -refresh_token")
-res
-.status(200)
-.json(new ApiResponse(200,"Bio Updated Successfully",user))
-})
+      bio: req.body.bio || "",
+    },
+  }).select("-password -refresh_token");
+  res.status(200).json(new ApiResponse(200, "Bio Updated Successfully"));
+});
 
 const toggleIsVarify = tryCatch(async (req, res) => {
-  if(!req.user) new ApiError(401, "User not found");
+  if (!req.user) new ApiError(401, "User not found");
   const user = await User.findById(req.user._id);
 
   user.isVarified = !user.isVarified;
   user.save({ validateBeforeSave: false });
 
   res
-  .send(new ApiResponse(200,"Bio Updated Successfully",user))
-})
+    .status(200)
+    .json(new ApiResponse(200, "User Varification Status Updated Successfully", { isVarified: user.isVarified }));
+});
+
+const toggleIsPrivateAccount = tryCatch(async (req, res) => {
+  if (!req.user) new ApiError(401, "User not found");
+  const user = await User.findById(req.user._id);
+
+  user.isPrivateAccount = !user.isPrivateAccount;
+  user.save({ validateBeforeSave: false });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, "User Privacy Status Updated Successfully", { isPrivateAccount: user.isPrivateAccount })
+    );
+});
 
 const removeUser = tryCatch(async (req, res) => {
   await User.findByIdAndDelete(req.user._id);
-  if(req.user.cover_pic) await deleteImageOnCloud(req.user.cover_pic);
+  if (req.user.cover_pic) await deleteImageOnCloud(req.user.cover_pic);
   await deleteImageOnCloud(req.user.profile_pic);
-  res
-  .status(200)
-  .json(new ApiResponse(200,"User deleted successfully",req.user))
-})
-
+  res.status(200).json(new ApiResponse(200, "User deleted successfully", req.user));
+});
 
 export {
   registerController,
@@ -265,4 +266,5 @@ export {
   removeUser,
   updateBio,
   toggleIsVarify,
+  toggleIsPrivateAccount,
 };

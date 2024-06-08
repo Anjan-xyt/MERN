@@ -12,8 +12,10 @@ import {
   removeUser,
   updateBio,
   toggleIsVarify,
+  toggleIsPrivateAccount,
 } from "../controllers/user.controller.js";
 import deleteAllPosts from "../middlewares/deleteAllPosts.middleware.js";
+import deleteAllComments from "../middlewares/deleteAllCommentsOfUser.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import varifyJWT from "../middlewares/auth.middleware.js";
@@ -55,6 +57,8 @@ router.route("/update-bio").patch(varifyJWT, updateBio);
 
 router.route("/toggle-is-varify").patch(varifyJWT, toggleIsVarify);
 
-router.route("/delete-user").delete(varifyJWT, deleteAllPosts, removeUser);
+router.route("/toggle-is-private").patch(varifyJWT, toggleIsPrivateAccount);
+
+router.route("/delete-user").delete(varifyJWT, deleteAllComments, deleteAllPosts, removeUser);
 
 export default router;
