@@ -20,11 +20,15 @@ app.use(cookieParser());
 import userRouter from "./routes/user.router.js";
 import postRouter from "./routes/post.router.js";
 import commentRouter from "./routes/comment.router.js";
+import likePostRouter from "./routes/like.post.router.js";
+import likeCommentRouter from "./routes/like.comment.router.js";
 
 // deploying routes
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/comments", commentRouter);
+app.use("/api/v1/like-posts", likePostRouter);
+app.use("/api/v1/like-comments", likeCommentRouter);
 
 // using error handler middleware
 app.use(errorHandler);
