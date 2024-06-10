@@ -12,6 +12,10 @@ const followerSchema = new Schema(
       ref: "User",
       required: true,
     },
+    isFollowedBack:{
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
