@@ -140,7 +140,7 @@ const changePassword = tryCatch(async (req, res) => {
 });
 
 const currentUser = tryCatch(async (req, res) => {
-  res.status(200).json(new ApiResponse(200, req.user, "User fetched successfully"));
+  res.status(200).json(new ApiResponse(200, "User fetched successfully", req.user));
 });
 
 const updateAccountDetails = tryCatch(async (req, res) => {

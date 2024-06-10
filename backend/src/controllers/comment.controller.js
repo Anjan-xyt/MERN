@@ -1,4 +1,5 @@
 import Comment from "../models/comment.model.js";
+import LikeComment from "../models/like.comment.model.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import tryCatch from "../utils/trycatch.js";
@@ -73,7 +74,9 @@ const deleteComment = tryCatch(async (req, res) => {
   console.log(isCommentValid);
   if (!isCommentValid) throw new ApiError(400, "This comment is not done by you");
 
-  await Comment.findByIdAndDelete(comment_id);
+  await LikeComment.deleteMany({ comment_id });//deletes all the likes associated with the comment
+
+  await Comment.findByIdAndDelete(comment_id);//deletes the comment
 
   res.status(200).json(new ApiResponse(200, "Comment deleted successfully", { comment }));
 });

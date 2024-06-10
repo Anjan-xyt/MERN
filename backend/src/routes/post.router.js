@@ -5,7 +5,6 @@ import {
   getAllPosts,
   currrentPostDetails,
   deletePost,
-  deleteAllPosts,
   updatePostDetails,
   updatePostImage,
 } from "../controllers/post.controller.js";
@@ -28,7 +27,5 @@ postRouter.route("/:post_id/update-post-details").patch(updatePostDetails);
 postRouter
   .route("/:post_id/update-post-img")
   .patch(upload.fields([{ name: "post_img", maxcount: 1 }]), updatePostImage);
-
-postRouter.route("/delete-all-posts").delete(deleteAllPosts);
 
 export default postRouter;

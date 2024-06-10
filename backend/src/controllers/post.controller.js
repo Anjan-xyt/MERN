@@ -2,7 +2,9 @@ import tryCatch from "../utils/trycatch.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
+import LikePost from "../models/like.post.model.js";
+import Comment from "../models/comment.model.js";
+import LikeComment from "../models/like.comment.model.js";
 import imgUploadOnCloud from "../utils/imgUploadOnCloud.js";
 import deleteImageOnCloud from "../utils/imgDeleteOnCloud.js";
 import mongoose from "mongoose";
@@ -31,45 +33,32 @@ const getAllPosts = tryCatch(async (req, res) => {
   if (!req.user) throw new ApiError(401, "User not found");
   if (!req.user?._id) throw new ApiError(401, "User not found");
 
-  const details = await User.aggregate([
+  const posts = await Post.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id),
-      },
-    },
-    {
-      $lookup: {
-        from: "posts", // Name of the collection to join with
-        localField: "_id", // Field from the current collection
-        foreignField: "created_by", // Field from the joined collection
-        as: "posts", // Name of the field to store the joined documents
-      },
-    },
-    {
-      $addFields: {
-        post_count: {
-          $size: "$posts",
-        },
+        created_by: new mongoose.Types.ObjectId(req.user._id),
       },
     },
     {
       $project: {
-        _id: 1,
-        username: 1,
-        full_name: 1,
-        post_count: 1,
-        posts: 1,
+        _id: 0,
+        caption: 1,
+        description: 1,
+        post_url: 1,
+        createdAt: 1,
+        updatedAt: 1,
       },
     },
   ]);
-  res.status(200).json(new ApiResponse(200, "Post details fetched successfully", details));
+
+  res.status(200).json(new ApiResponse(200, "Post details fetched successfully", posts));
 });
 
 const currrentPostDetails = tryCatch(async (req, res) => {
   if (!req.user) throw new ApiError(401, "User not authorized");
   if (!req.params?.post_id) throw new ApiError(401, "Please provide post id");
 
-  const post = await Post.findById(req.params.post_id);
+  const post = await Post.findById(req.params.post_id).select("-_id -__v");
 
   if (!post) throw new ApiError(500, "Post fetch failed");
 
@@ -135,44 +124,52 @@ const deletePost = tryCatch(async (req, res) => {
   if (!isUserAuthorized)
     throw new ApiError(400, "You are not authorized to delete this post since you didn't create it");
 
-  const deletedPost = await Post.findByIdAndDelete(post._id);
-  if (!deletedPost) throw new ApiError(500, "Post deletion failed");
-  await deleteImageOnCloud(post.post_url);
-
-  res.status(200).json(new ApiResponse(201, "Post deleted successfully", deletedPost));
-});
-
-const deleteAllPosts = tryCatch(async (req, res) => {
-  if (!req.user) throw new ApiError(401, "User not authorized");
-  if (!req.user._id) throw new ApiError(401, "User not authorized");
-
-  const allPostURLs = await Post.aggregate([
-    //returns an array having objects containing only key "post_url"
+  const likecomments = await Comment.aggregate([
+    //returns all the likes on the comments of the post
     {
       $match: {
-        created_by: new mongoose.Types.ObjectId(req.user._id),
+        post_id: new mongoose.Types.ObjectId(post._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "likecomments",
+        localField: "_id",
+        foreignField: "comment_id",
+        as: "result",
+      },
+    },
+    {
+      $unwind: "$result",
+    },
+    {
+      $addFields: {
+        tobedeleted: "$result._id",
       },
     },
     {
       $project: {
-        post_url: 1,
         _id: 0,
+        tobedeleted: 1,
       },
     },
   ]);
 
-  allPostURLs.forEach(async (obj) => {
-    try {
-      await deleteImageOnCloud(obj.post_url);
-    } catch (error) {
-      throw new ApiError(500, "Failed to delete images from cloud");
-    }
-  });
+  console.log(likecomments);
 
-  const allDeletedPosts = await Post.deleteMany({ created_by: req.user._id });
-  if (!allDeletedPosts) throw new ApiError(500, "Post deletion failed");
+  likecomments.forEach(async (likecomment) => {
+    await LikeComment.findByIdAndDelete(likecomment.tobedeleted);
+  }); //deletes all the likes on the comments of the post
 
-  res.status(200).json(new ApiResponse(200, "All Posts Deleted Successfully", allDeletedPosts));
+  await Comment.deleteMany({ post_id: post._id }); //deletes all the comments of the post
+
+  await LikePost.deleteMany({ post_id: post._id }); //deletes all the likes of the post
+
+  await deleteImageOnCloud(post.post_url); //delete the image from cloud
+  const deletedPost = await Post.findByIdAndDelete(post._id); //deletes the post
+  if (!deletedPost) throw new ApiError(500, "Post deletion failed");
+
+  res.status(200).json(new ApiResponse(201, "Post deleted successfully", deletedPost));
 });
 
-export { createPost, getAllPosts, currrentPostDetails, deletePost, deleteAllPosts, updatePostDetails, updatePostImage };
+export { createPost, getAllPosts, currrentPostDetails, deletePost, updatePostDetails, updatePostImage };
