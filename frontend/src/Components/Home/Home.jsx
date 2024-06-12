@@ -1,11 +1,7 @@
-import React from 'react'
-import InputValueGetter from '../InputValueGetter'
-
-
 function Home() {
-  return (
-    <InputValueGetter />
-  )
+  return <div className="bg-slate-50 dark:bg-neutral-800 dark:text-white min-h-screen w-full">
+    Home Sweet Home
+    </div>;
 }
 
-export default Home
+export default Home;
