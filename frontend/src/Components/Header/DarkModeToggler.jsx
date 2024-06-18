@@ -10,7 +10,7 @@ function DarkModeToggler() {
   }
   return (
     <button onClick={darkModeHandler}>
-      {darkMode ? <IoMdMoon className="text-gray-200 size-10" /> : <IoMdSunny className="text-gray-600 size-10" />}
+      {darkMode ? <IoMdMoon className="text-gray-400 size-10" /> : <IoMdSunny className="text-gray-600 size-10" />}
     </button>
   );
 }

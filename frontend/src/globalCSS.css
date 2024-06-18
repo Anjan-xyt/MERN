@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    @apply transition-colors duration-500;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+.ul-borders{
+    border-bottom: 1px solid black;
+    border-top: 1px solid rgba(255,255,255,.1)
+}
+
+@keyframes color-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  .animate-color-flow {
+    background-size: 200% 100%;
+    animation: color-flow 2s linear infinite;
+  }

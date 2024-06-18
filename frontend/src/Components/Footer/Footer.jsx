@@ -1,7 +1,7 @@
 
 
 function Footer() {
-  return <div>Footer</div>;
+  return <div className="md:hidden">Footer</div>;
 }
 
 export default Footer;
