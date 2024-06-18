@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+import { MdOutlineKeyboardArrowRight, MdOutlineKeyboardArrowLeft } from 'react-icons/md';
+import Button from '../react-components/Button';
 
 function FormNav(props) {
-  const {activeStep, steps, setActiveStep} = props;
+  const { activeStep, steps, setActiveStep } = props;
   const next = () => {
     if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
@@ -13,10 +15,10 @@ function FormNav(props) {
     }
   };
   return (
-    <div className='flex justify-between w-full'>
-      <button onClick={prev} disabled={activeStep === 0}>Prev</button>
-      {activeStep === steps.length ? <button>Register</button> : <button>Register</button>}
-      <button onClick={next} disabled={activeStep === steps.length - 1}>Next</button>
+    <div className="flex w-full justify-between pt-2 md:pt-4 lg:pt-6">
+      <Button onClick={prev} isDisabled={activeStep === 0} textsize = 'lg:text-4xl md:text-2xl text-xl' content={<MdOutlineKeyboardArrowLeft />} />
+      <Button isDisabled={activeStep !== steps.length - 1} content="Register" />
+      <Button onClick={next} isDisabled={activeStep === steps.length - 1} textsize = 'lg:text-4xl md:text-2xl text-xl' content={<MdOutlineKeyboardArrowRight />} />
     </div>
   );
 }

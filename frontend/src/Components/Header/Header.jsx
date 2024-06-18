@@ -70,7 +70,7 @@ function Header() {
         </button>
 
         <Link to="/">
-          <span className="text-4xl font-extrabold">network</span>
+          <span className="text-2xl md:text-3xl lg:text-4xl dark:text-violet-800 md:text-violet-800 text-blue-500 md:dark:text-purple-800 font-extrabold">network</span>
         </Link>
         <ul className="hidden h-full text-xl md:flex md:gap-8">
           {navlinks.map(function (link) {
