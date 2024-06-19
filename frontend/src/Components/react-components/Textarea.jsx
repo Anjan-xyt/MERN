@@ -9,12 +9,12 @@ function Input({ label, name, rows, cols }) {
         cols={cols}
         rows={rows}
         spellCheck={false}
-        className="peer w-full resize-none rounded-bl-xl border-b-4 border-l-[1px] border-neutral-400 bg-inherit px-6 text-neutral-500 placeholder-transparent focus:border-neutral-500 focus:text-neutral-700 focus:outline-none dark:border-neutral-600 dark:text-neutral-400 dark:focus:border-neutral-400 dark:focus:text-neutral-300"
+        className="peer w-full resize-none rounded-bl-xl border-b-4 border-[1px] border-neutral-400 bg-inherit px-6 text-neutral-500 placeholder-transparent focus:border-neutral-500 focus:text-neutral-700 focus:outline-none dark:border-neutral-600 dark:text-neutral-400 dark:focus:border-neutral-400 dark:focus:text-neutral-300"
         placeholder="dummy placeholder"
       ></textarea>
       <label
         htmlFor={name}
-        className="absolute -top-3 left-6 cursor-text text-[12px] text-gray-600 transition-all peer-placeholder-shown:top-1 peer-placeholder-shown:text-[14px] peer-placeholder-shown:text-gray-400 peer-focus:-top-3 peer-focus:text-[12px] peer-focus:text-gray-600 dark:text-neutral-500 dark:peer-placeholder-shown:text-neutral-500 dark:peer-focus:text-neutral-300 md:-top-6 md:text-lg md:peer-placeholder-shown:top-0 md:peer-placeholder-shown:text-lg md:peer-focus:-top-6 md:peer-focus:text-lg"
+        className="absolute -top-4 left-6 cursor-text text-[12px] text-gray-600 transition-all peer-placeholder-shown:top-1 peer-placeholder-shown:text-[14px] peer-placeholder-shown:text-gray-400 peer-focus:-top-4 peer-focus:text-[12px] peer-focus:text-gray-600 dark:text-neutral-500 dark:peer-placeholder-shown:text-neutral-500 dark:peer-focus:text-neutral-300 md:-top-6 md:text-lg md:peer-placeholder-shown:top-0 md:peer-placeholder-shown:text-lg md:peer-focus:-top-6 md:peer-focus:text-lg"
       >
         {label}
       </label>

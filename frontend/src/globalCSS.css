@@ -6,6 +6,9 @@
 
 * {
     @apply transition-colors duration-500;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
 }
 
 input:-webkit-autofill,
